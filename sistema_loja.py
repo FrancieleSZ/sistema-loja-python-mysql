@@ -140,7 +140,7 @@ def exibir_relatorio_vendas():
             print("RELATÓRIOS")
             print(f"Marca:       {item['marca_da_roupa']}")
             print(f"Preço da Roupa:   {item['preco_da_roupa']}")
-            print(f"Id do(a) Atendente:   {item['id']}")
+            print(f"Id do(a) Atendente:   {item['id_do_atendente']}")
             print(f"Desconto:  {item['desconto']}")
             print(f"Total:  {item['total_da_compra']}")
             print(f"Data:   {item['data']}")
