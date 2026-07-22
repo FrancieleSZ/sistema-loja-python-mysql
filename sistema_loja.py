@@ -28,7 +28,8 @@ def exibir_menu() -> None:
     print("Exibir relatório de vendas [2]")
     print("Cadastrar novo funcionário [3]")
     print("Pesquisar atendente por ID [4]")
-    print("Sair [5]")
+    print("Apagar cadastro do funcionario [5]")
+    print("Sair [6]")
 #A parte das perguntas para o usúario e também onde o sistema monta o relátorio criado
 def venda():
     separar_linha()
@@ -59,7 +60,13 @@ def venda():
                 break
         except ValueError:
             print("Digite apenas números")
-           
+    while True:
+            data = input("Data:")
+            if data:
+                break
+            else:
+                print("Deve possuir letras!")
+            
     total_da_compra = (desconto_fornecido/100)*preco_da_roupa
 
     separar_linha()
@@ -68,10 +75,10 @@ def venda():
         cursor = conn.cursor()
         
         # O SQL agora recebe os novos campos
-        sql = """INSERT INTO relatorios (marca_da_roupa, preco_da_roupa, id_do_atendente, desconto, total_da_compra) 
-                 VALUES (%s, %s, %s, %s, %s)"""
+        sql = """INSERT INTO relatorios (marca_da_roupa, preco_da_roupa, id_do_atendente, desconto, total_da_compra, data) 
+                 VALUES (%s, %s, %s, %s, %s, %s)"""
         
-        cursor.execute(sql, (marca_da_roupa, preco_da_roupa, id_da_atendente, desconto_fornecido, total_da_compra))
+        cursor.execute(sql, (marca_da_roupa, preco_da_roupa, id_da_atendente, desconto_fornecido, total_da_compra, data))
         
         conn.commit()
         print("Relatório salvo com sucesso!")
@@ -116,12 +123,13 @@ def registrar_atendente():
 
 def exibir_relatorio_vendas():
     try:
+        data_desejada = input("Digite a data que deseja buscar:")
         conn = conectar()
         cursor = conn.cursor(dictionary=True) # dictionary=True facilita pegar os dados
-        cursor.execute("SELECT * FROM relatorios")
+        cursor.execute("SELECT * FROM relatorios WHERE data = %s ", (data_desejada,))
         vendas = cursor.fetchall()
 
-        cursor.execute("SELECT SUM(total_da_compra) as lucro_total FROM relatorios")
+        cursor.execute("SELECT SUM(total_da_compra) as lucro_total FROM relatorios WHERE data = %s", (data_desejada,))
         resultado = cursor.fetchone()
         
         if not vendas:
@@ -135,6 +143,7 @@ def exibir_relatorio_vendas():
             print(f"Id do(a) Atendente:   {item['id']}")
             print(f"Desconto:  {item['desconto']}")
             print(f"Total:  {item['total_da_compra']}")
+            print(f"Data:   {item['data']}")
             separar_linha()
 
         lucro = resultado['lucro_total'] if resultado['lucro_total'] else 0
@@ -178,6 +187,25 @@ def buscar_atendente_por_id():
     except Exception as e:
         print(f"Erro ao acessar o banco de dados: {e}")
 
+def apagar_cadastro():
+    try:
+        conn = conectar() # Sua função de conexão que já criamos
+        cursor = conn.cursor()
+
+        id = input("ID do funcionário que deseja apagar:")
+           
+           # O SQL busca apenas o registro onde o id_atendente for igual ao digitado
+        sql = "DELETE FROM funcionarios WHERE id = %s"
+
+        cursor.execute(sql, (id,))
+
+        conn.commit()
+        print("Funcionario apagado com sucesso!")
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Erro ao acessar o banco de dados: {e}")
+    
 def menu_principal() -> None:
     while True:
         exibir_menu()
@@ -205,6 +233,9 @@ def menu_principal() -> None:
             buscar_atendente_por_id()
             break
         elif opcao == 5:
+            apagar_cadastro()
+            break
+        elif opcao == 6:
             print("Até logo!")
             break
 if __name__ == "__main__":
