@@ -222,7 +222,6 @@ def menu_principal() -> None:
         elif opcao == 2:
             while True:
                 exibir_relatorio_vendas()
-                break
                 if not confirmacao("Deseja ver outra data?"):
                     break
         elif opcao == 3:
@@ -232,14 +231,15 @@ def menu_principal() -> None:
                     break
                 return
         elif opcao == 4:
-            buscar_atendente_por_id()
-            break
-            if not confirmacao("Deseja buscar outro atendente?"):
+            while True:
+                buscar_atendente_por_id()
+                if not confirmacao("Deseja buscar outro atendente?"):
                     break
+                return
         elif opcao == 5:
-            apagar_cadastro()
-            break
-            if not confirmacao("Deseja apagar outro cadastro?"):
+            while True:
+                apagar_cadastro()
+                if not confirmacao("Deseja apagar outro cadastro?"):
                     break
         elif opcao == 6:
             print("Até logo!")
